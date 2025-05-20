@@ -1,9 +1,8 @@
-using System;
-
 class Program
 {
     static void Main(string[] args)
     {
-        Console.WriteLine("Hello Learning03 World!");
+        Fraction frac = new Fraction();
+        frac.DoFraction("3", "4"); // Outputs: Fraction result: 0.75
     }
 }
