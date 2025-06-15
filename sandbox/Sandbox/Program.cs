@@ -77,7 +77,7 @@ class Program
         // kphValue = int.Parse(Console.ReadLine());
         // double mphValue = 0;
         // mphValue = kphValue*0.621371;
-        
+
 
         // Console.WriteLine($"{kphValue} kph is {Math.Round(mphValue, 2)} miles per hour.");
         // if (kphValue > 200)
@@ -101,7 +101,7 @@ class Program
         // response = Console.ReadLine();
         // } while (response == "yes");
 
-        
+
         // List<int> guesses = new List<int>();
         // int luckyNumber;
         // int guessNumber;
@@ -138,43 +138,53 @@ class Program
 
         // }
 
-        DisplayWelcome();
-        
-    }
-    
+        // DisplayWelcome();
 
-    static void DisplayWelcome()
-    {
-        Console.WriteLine("Welcome to the program! ");
-        PromptUserName();
-        
     }
 
-    static void PromptUserName()
-    {   
-        string userName = "";
-        Console.Write("Please enter your name: ");
-        userName = Console.ReadLine();
-        PromptUserNumber(userName);
-    }
 
-    static void PromptUserNumber(string userName)
-    {
-        int userNumber = 0;
-        Console.Write("Please enter your favorite integer: ");
-        userNumber = int.Parse(Console.ReadLine());
-        SquareNumber(userNumber, userName);
-    }
+    // static void DisplayWelcome()
+    // {
+    //     Console.WriteLine("Welcome to the program! ");
+    //     PromptUserName();
 
-    static void SquareNumber(int userNumber, string userName)
-    {
-        int squaredNumber;
-        squaredNumber = userNumber * userNumber;
-        DisplayResults(userName, squaredNumber);
-    }
+    // }
 
-    static void DisplayResults(string userName, int squaredNumber)
-    {
-        Console.WriteLine($"Hello {userName}, the square of your number is: {squaredNumber}");
-    }
+    // static void PromptUserName()
+    // {   
+    //     string userName = "";
+    //     Console.Write("Please enter your name: ");
+    //     userName = Console.ReadLine();
+    //     PromptUserNumber(userName);
+    // }
+
+    // static void PromptUserNumber(string userName)
+    // {
+    //     int userNumber = 0;
+    //     Console.Write("Please enter your favorite integer: ");
+    //     userNumber = int.Parse(Console.ReadLine());
+    //     SquareNumber(userNumber, userName);
+    // }
+
+    // static void SquareNumber(int userNumber, string userName)
+    // {
+    //     int squaredNumber;
+    //     squaredNumber = userNumber * userNumber;
+    //     DisplayResults(userName, squaredNumber);
+    // }
+
+    // static void DisplayResults(string userName, int squaredNumber)
+    // {
+    //     Console.WriteLine($"Hello {userName}, the square of your number is: {squaredNumber}");
+    // }
+}
+class Person
+{
+    protected string _name;
+    protected int _age;
+    protected bool _isLeftHanded;
+}
+public class Student : Person
+{
+    private int _iNumber;
 }
