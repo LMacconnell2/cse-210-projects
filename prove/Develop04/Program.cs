@@ -278,7 +278,7 @@ class ReflectionActivity : Activity
     {
         return random.Next(0, 3);
     }
-    
+
     public override void DisplayDescription()
     {
         Console.WriteLine(_desc);

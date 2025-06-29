@@ -1,0 +1,14 @@
+{
+  "score": 50000000,
+  "goals": [
+    {
+      "GoalType": "Checklist",
+      "GoalName": "EAT CHICKEN",
+      "GoalDesc": "I WILL ALWAYS EAT CHICKEN",
+      "GoalPoints": 50000000,
+      "TimesCompleted": 1,
+      "TimesToComplete": 12951235,
+      "GoalCompleted": false
+    }
+  ]
+}
