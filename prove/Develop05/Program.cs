@@ -31,7 +31,7 @@ class Program
             }
             else if (_selection == "2")
             {
-                goalHandler.RemoveGoal();
+                goalHandler.RemoveGoal(); //HERE IS THE EXTRA THING!
             }
             else if (_selection == "3")
             {
