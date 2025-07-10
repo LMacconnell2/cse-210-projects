@@ -26,6 +26,7 @@ class Program
             Console.WriteLine("4) Remove an Event");
             Console.WriteLine("5) Save to file");
             Console.WriteLine("6) Open existing file.");
+            Console.WriteLine("7) Quit");
             selection = Console.ReadLine();
             if (selection == "1")
             {
@@ -50,6 +51,10 @@ class Program
             else if (selection == "6")
             {
                 fileHandler.OpenFile("Example FilePath");
+            }
+            else if (selection == "7")
+            {
+                quit = true;
             }
             else
             {
