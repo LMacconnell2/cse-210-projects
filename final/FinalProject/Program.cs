@@ -280,29 +280,45 @@ class FileHandler
             string desc = element.GetProperty("eventDesc").GetString();
             string date = element.GetProperty("date").GetString();
 
-            Event e = type switch
+            Event e;
+
+            switch (type)
             {
-                "Reminder" => new Reminder(name, desc, date),
-                "Due Date" => new DueDate(name, desc, date),
-                "Appointment" => new Appointment(name, desc, date)
-                {
-                    StartTime = element.GetProperty("startTime").GetString(),
-                    EndTime = element.GetProperty("endTime").GetString()
-                },
-                "Class" => new Class(name, desc, date)
-                {
-                    Teacher = element.GetProperty("teacher").GetString(),
-                    Subject = element.GetProperty("subject").GetString(),
-                    StartTime = element.GetProperty("startTime").GetString(),
-                    EndTime = element.GetProperty("endTime").GetString()
-                },
-                _ => new Event(name, desc, date)
-            };
+                case "Reminder":
+                    e = new Reminder(name, desc, date);
+                    break;
+
+                case "Due Date":
+                    e = new DueDate(name, desc, date);
+                    break;
+
+                case "Appointment":
+                    var appt = new Appointment(name, desc, date);
+                    appt.StartTime = element.GetProperty("startTime").GetString();
+                    appt.EndTime = element.GetProperty("endTime").GetString();
+                    e = appt;
+                    break;
+
+                case "Class":
+                    var cls = new Class(name, desc, date);
+                    cls.Teacher = element.GetProperty("teacher").GetString();
+                    cls.Subject = element.GetProperty("subject").GetString();
+                    cls.StartTime = element.GetProperty("startTime").GetString();
+                    cls.EndTime = element.GetProperty("endTime").GetString();
+                    e = cls;
+                    break;
+
+                default:
+                    e = new Event(name, desc, date);
+                    break;
+            }
 
             if (element.TryGetProperty("completed", out var compProp))
                 e.Completed = compProp.GetString().ToLower() == "true";
+
             eventList.Add(e);
         }
+
         Console.WriteLine("Events loaded.");
         return eventList;
     }
