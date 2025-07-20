@@ -1,23 +1,27 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Reflection.PortableExecutable;
 using System.Runtime.InteropServices;
 using System.Text.Json;
+using System.Diagnostics;
 
 class Program
 {
-
-
     static void Main(string[] args)
     {
         bool quit = false;
         string selection = "";
         Console.WriteLine("Welcome to Task Tracker!! ");
+        
 
         // Create each of the classes
         EventHandler eventHandler = new EventHandler();
         FileHandler fileHandler = new FileHandler();
+
         while (!quit)
         {
+            eventHandler.DisplayTodayEvents();
             Console.WriteLine();
             Console.WriteLine("Select an Option to Begin: ");
             Console.WriteLine("1) Display Current Events");
@@ -46,14 +50,19 @@ class Program
             }
             else if (selection == "5")
             {
-                fileHandler.addToFile("string");
+                Console.Write("Enter file path to save: ");
+                string savePath = Console.ReadLine();
+                FileHandler.SaveFile(savePath, eventHandler.Events);
             }
             else if (selection == "6")
             {
-                fileHandler.OpenFile("Example FilePath");
+                Console.Write("Enter file path to open: ");
+                string openPath = Console.ReadLine();
+                eventHandler.Events = FileHandler.OpenFile(openPath);
             }
             else if (selection == "7")
             {
+                FileHandler.FileCleanup();
                 quit = true;
             }
             else
@@ -68,190 +77,234 @@ class Program
 
 class EventHandler
 {
-    public List<Event> _events { get; set; } = new List<Event>();
-
-    public EventHandler()
-    {
-        Console.WriteLine("This is the EventHandler Constructor");
-    }
+    public List<Event> Events { get; set; } = new List<Event>();
 
     public void DisplayEvents()
     {
-        Console.WriteLine("This is the DisplayEvents method");
+        Console.Write("Select a Day to display: (MM-DD-YYYY): ");
+        string date = Console.ReadLine();
+        int count = 0;
+        for (int i = 0; i < Events.Count; i++)
+        {
+            if (Events[i].Date.Contains(date))
+            {
+                Console.Write($"{++count}) ");
+                Events[i].DisplayEvent();
+            }
+        }
+        if (count == 0) Console.WriteLine("No events on this date.");
+    }
+
+    public void DisplayTodayEvents()
+    {
+    string today = DateTime.Now.ToString("MM-dd-yyyy");
+    int count = 0;
+
+    Console.WriteLine("Reminders and Due Dates Today:");
+
+    foreach (var e in Events)
+    {
+        if (e.OccursOnDate(today) && e.IsReminderOrDueDate())
+        {
+            e.DisplayEvent();
+            count++;
+        }
+    }
+    if (count == 0)
+    {
+        Console.WriteLine("No events today.");
+    }
+    Console.WriteLine();
     }
 
     public void NewEvent()
     {
-        Console.WriteLine("Creating a New Event");
+        Console.Write("Enter event type (Reminder, Due Date, Appointment, Class): ");
+        string type = Console.ReadLine();
+        Console.Write("Enter name: ");
+        string name = Console.ReadLine();
+        Console.Write("Enter description: ");
+        string desc = Console.ReadLine();
+        Console.Write("Enter date(s) (comma-separated): ");
+        string date = Console.ReadLine();
+
+        Event newEvent = type.ToLower() switch
+        {
+            "reminder" => new Reminder(name, desc, date),
+            "due date" => new DueDate(name, desc, date),
+            "appointment" => new Appointment(name, desc, date),
+            "class" => new Class(name, desc, date),
+            _ => new Event(name, desc, date)
+        };
+
+        Events.Add(newEvent);
+        Console.WriteLine("Event added.");
     }
 
     public void RemoveEvent()
     {
-        Console.WriteLine("Removed an Event");
+        Console.Write("Enter event name to remove: ");
+        string name = Console.ReadLine();
+        Events.RemoveAll(e => e.EventName.Equals(name, StringComparison.OrdinalIgnoreCase));
+        Console.WriteLine("Event removed.");
     }
 
     public void CompleteEvent()
     {
-        Console.WriteLine("Completing an Event");
+        Console.Write("Enter event name to mark complete: ");
+        string name = Console.ReadLine();
+        var ev = Events.Find(e => e.EventName.Equals(name, StringComparison.OrdinalIgnoreCase));
+        if (ev != null)
+        {
+            ev.Completed = true;
+            Console.WriteLine("Event marked as complete.");
+        }
+        else Console.WriteLine("Event not found.");
     }
 }
 
 class Event
 {
-    protected string eventName;
-    protected string eventDescription;
-    protected string eventType;
-    protected bool repeatable;
-    protected List<string> datesRepeated { get; set; } = new List<string>();
+    public string EventType { get; set; }
+    public string EventName { get; set; }
+    public string EventDescription { get; set; }
+    public string Date { get; set; }
+    public bool Completed { get; set; }
+    public bool Repeatable { get; set; }
 
-    public Event()
-    {
-        Console.WriteLine("Here is the event constructor!");
-    }
-    public void updateEvent()
-    {
-        Console.WriteLine("Selected Event has been updated");
-    }
+    public Event() { }
 
-    public void RepeatEvent()
+    public Event(string name, string desc, string date)
     {
-        Console.WriteLine("Selected Event has been repeated");
+        EventName = name;
+        EventDescription = desc;
+        Date = date;
+        Completed = false;
+        Repeatable = date.Contains(",");
     }
 
     public virtual void DisplayEvent()
     {
-        Console.WriteLine("Displaying the default event");
-        Console.WriteLine("How did you get here? ");
+        Console.WriteLine($"{EventType}: {EventName} - {EventDescription} on {Date} {(Completed ? "[Completed]" : "")}");
+    }
+
+    public virtual bool OccursOnDate(string date)
+    {
+        return Date.Contains(date);
+    }
+
+    public virtual bool IsReminderOrDueDate()
+    {
+        return false;
     }
 }
 
 class Reminder : Event
 {
-    private int _minutesToEvent;
-    private int _priority;
-    private int _minute;
-    private int _hour;
-    private int _year;
-
-    public Reminder() : base()
+    public Reminder(string name, string desc, string date) : base(name, desc, date)
     {
-        Console.WriteLine("Here is the reminder constructor!");
+        EventType = "Reminder";
     }
-
-    public override void DisplayEvent()
+    public override bool IsReminderOrDueDate()
     {
-        Console.WriteLine("This displays the reminder event");
+        return true;
     }
 }
 
 class DueDate : Event
 {
-    private int _hourDue;
-    private int _dayDue;
-    private int _monthDue;
-    private int _yearDue;
-    private bool _completed;
-
-    public DueDate() : base()
+    public DueDate(string name, string desc, string date) : base(name, desc, date)
     {
-        Console.WriteLine("HEre is the DueDate Constructor!");
+        EventType = "Due Date";
     }
-
-    public void DisplayDueDate()
+    public override bool IsReminderOrDueDate()
     {
-        Console.WriteLine("Your late for your date! Now she has to wait while finish your plate!");
-    }
-
-    public override void DisplayEvent()
-    {
-        Console.WriteLine("This displays the Due Date Event");
+        return true;
     }
 }
 
-class TimeBlock : Event
+class Appointment : Event
 {
-    private int _startHour;
-    private int _endHour;
-    private int _startMinute;
-    private int _endMinute;
-    private List<int> _date { get; set; } = new List<int>();
-    private string _notes;
-    public TimeBlock() : base()
-    {
-        Console.WriteLine("This is the TimeBlock constructor!");
-    }
+    public string StartTime { get; set; }
+    public string EndTime { get; set; }
 
-    public void DisplayNotes()
+    public Appointment(string name, string desc, string date) : base(name, desc, date)
     {
-        _notes = "This is a note I made in 10 seconds";
-        Console.WriteLine(_notes);
-    }
-    public override void DisplayEvent()
-    {
-        Console.WriteLine("This is the DisplayEvent method for the TimeBlock class");
+        EventType = "Appointment";
     }
 }
 
-class Appointment : TimeBlock
+class Class : Event
 {
-    private List<string> _persons { get; set; } = new List<string>();
-    private string _address;
+    public string Teacher { get; set; }
+    public string Subject { get; set; }
+    public string StartTime { get; set; }
+    public string EndTime { get; set; }
 
-    public Appointment() : base()
+    public Class(string name, string desc, string date) : base(name, desc, date)
     {
-        Console.WriteLine("This is the constructor for the appointment class!");
-    }
-
-    public override void DisplayEvent()
-    {
-        Console.WriteLine("You have an appointment... now! GO GO GO!");
-    }
-}
-
-class Class : TimeBlock
-{
-    private string _subject;
-    private string _teacher;
-
-    public Class() : base()
-    {
-        Console.WriteLine("This is the Class cosntructor!");
-    }
-
-    public override void DisplayEvent()
-    {
-        Console.WriteLine("Why did you decide to take this class?");
+        EventType = "Class";
     }
 }
 
 class FileHandler
 {
-    private string _file;
-    private string _filePath;
-
-    public FileHandler() : base()
+    public static void SaveFile(string filePath, List<Event> events)
     {
-        Console.WriteLine("This is the FileHandler constructor!");
+        var wrapper = new { events = events };
+        var options = new JsonSerializerOptions { WriteIndented = true };
+        string json = JsonSerializer.Serialize(wrapper, options);
+        File.WriteAllText(filePath, json);
+        Console.WriteLine("Events saved.");
     }
 
-    public string OpenFile(string filePath)
+    public static void FileCleanup()
     {
-        return "File Opened";
+    System.Diagnostics.Process.Start(new ProcessStartInfo
+    {
+        FileName = "https://youtu.be/dQw4w9WgXcQ?si=7G27bIu6I9-gYo8W",
+        UseShellExecute = true
+    });
     }
 
-    public string addToFile(int day)
+    public static List<Event> OpenFile(string filePath)
     {
-        return "Reminder";
-    }
+        string json = File.ReadAllText(filePath);
+        var doc = JsonDocument.Parse(json);
+        var eventList = new List<Event>();
 
-    public string addToFile(string day)
-    {
-        return "DueDate";
-    }
+        foreach (var element in doc.RootElement.GetProperty("events").EnumerateArray())
+        {
+            string type = element.GetProperty("eventType").GetString();
+            string name = element.GetProperty("eventName").GetString();
+            string desc = element.GetProperty("eventDesc").GetString();
+            string date = element.GetProperty("date").GetString();
 
-    public string addToFile(float day)
-    {
-        return "TimeBlock";
+            Event e = type switch
+            {
+                "Reminder" => new Reminder(name, desc, date),
+                "Due Date" => new DueDate(name, desc, date),
+                "Appointment" => new Appointment(name, desc, date)
+                {
+                    StartTime = element.GetProperty("startTime").GetString(),
+                    EndTime = element.GetProperty("endTime").GetString()
+                },
+                "Class" => new Class(name, desc, date)
+                {
+                    Teacher = element.GetProperty("teacher").GetString(),
+                    Subject = element.GetProperty("subject").GetString(),
+                    StartTime = element.GetProperty("startTime").GetString(),
+                    EndTime = element.GetProperty("endTime").GetString()
+                },
+                _ => new Event(name, desc, date)
+            };
+
+            if (element.TryGetProperty("completed", out var compProp))
+                e.Completed = compProp.GetString().ToLower() == "true";
+            eventList.Add(e);
+        }
+        Console.WriteLine("Events loaded.");
+        return eventList;
     }
 }
 

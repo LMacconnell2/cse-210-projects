@@ -1,0 +1,36 @@
+{
+  "events": [
+    {
+      "EventType": "Reminder",
+      "EventName": "Don\u0027t Forget to Wash Your Clothes",
+      "EventDescription": "I need to wash my clothes on these days",
+      "Date": "07-19-2025, 07-26-2025",
+      "Completed": false,
+      "Repeatable": true
+    },
+    {
+      "EventType": "Due Date",
+      "EventName": "Complete Coding Assignment",
+      "EventDescription": "Complete the Final Project Dummy!",
+      "Date": "07-19-2025",
+      "Completed": false,
+      "Repeatable": false
+    },
+    {
+      "EventType": "Appointment",
+      "EventName": "Grandpa\u0027s Bday Party",
+      "EventDescription": "Never Gonna Give You Up!",
+      "Date": "07-19-2025",
+      "Completed": false,
+      "Repeatable": false
+    },
+    {
+      "EventType": "Class",
+      "EventName": "CSE 210",
+      "EventDescription": "I am glad this class is done!",
+      "Date": "07-19-2025, 07-26-2025",
+      "Completed": false,
+      "Repeatable": true
+    }
+  ]
+}

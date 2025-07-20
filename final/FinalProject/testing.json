@@ -1,0 +1,43 @@
+{
+    "events": [
+      {
+        "eventType": "Reminder",
+        "eventName": "Don't Forget to Wash Your Clothes",
+        "eventDesc": "I need to wash my clothes on these days",
+        "completed": "false",
+        "repeatable": "true",
+        "date": "07-19-2025, 07-26-2025"
+      },
+      {
+        "eventType": "Due Date",
+        "eventName": "Complete Coding Assignment",
+        "eventDesc": "Complete the Final Project Dummy!",
+        "completed": "false",
+        "repeateable": "false",
+        "date": "07-19-2025"
+      },
+
+      {
+        "eventType": "Appointment",
+        "eventName": "Grandpa's Bday Party",
+        "eventDesc": "Never Gonna Give You Up!",
+        "repeatable": "false",
+        "date": "07-19-2025",
+        "startTime": "19:00",
+        "endTime": "21:00"
+      },
+      {
+        "eventType": "Class",
+        "eventName": "CSE 210",
+        "eventDesc": "I am glad this class is done!",
+        "repeatable": "true",
+        "date": "07-19-2025, 07-26-2025",
+        "teacher": "Brother Crosby",
+        "subject": "Programming",
+        "startTime": "14:00",
+        "endTime": "15:00"
+      }
+
+    ]
+
+}
